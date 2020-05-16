@@ -198,7 +198,6 @@ export default {
 #my-swiper {
   overflow: hidden;
   position: relative;
-  top: 44px;
 }
 .swiper {
     display: flex;

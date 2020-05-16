@@ -5,3 +5,9 @@ export function getBanner() {
         url: '/out-site/get-banner'
     })
 }
+
+export function getRecommendSite() {
+    return request({
+        url: '/out-site/recommend-site'
+    })
+}
