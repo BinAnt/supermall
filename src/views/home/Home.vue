@@ -3,6 +3,7 @@
     <NavBar class="home-nav-bar"><div class="nav-left" slot="center">购物街</div></NavBar>
     <Swiper :banners="banners" :showIndicator="showIndicator"></Swiper>
     <recommendSite :recommendSites="recommendSites"></recommendSite>
+    <AdSite :ads="ads"></AdSite>
 </div>
 </template>
 
@@ -10,6 +11,7 @@
 import NavBar from 'components/common/navbar/NavBar'
 import Swiper from 'components/common/swiper/Swiper'
 import recommendSite from './childComps/RecommendSite'
+import AdSite from './childComps/AdSite'
 
 import { getBanner,getRecommendSite } from 'network/home'
 import { getImgUrl } from 'common/utils'
@@ -18,15 +20,17 @@ export default {
     name: 'Home',
     data() {
         return {
-            banners: [],
-            recommendSites: [],
-            showIndicator: true
+            banners: [], // banner数据
+            recommendSites: [], // 推荐位数据
+            ads: [], // 广告位
+            showIndicator: true // 是否显示swiper 小点
         }
     },
     components: {
         NavBar,
         Swiper,
-        recommendSite
+        recommendSite,
+        AdSite
     },
     created() {
         //1、发送请求
@@ -39,11 +43,18 @@ export default {
             })
         })
 
-        //2、请求推荐位
+        //2、请求推荐位/广告位
         getRecommendSite().then(res => {
-            this.recommendSites = res.data.list.map(item => {
-                item.img_url = getImgUrl(item.img_url, 'midImg')
-                return item;
+            let list = res.data.list;
+
+            res.data.list.map(item => {
+                if (item.category_id == 0) {
+                    item.img_url = getImgUrl(item.img_url, 'midImg')
+                    this.recommendSites.length<5&&this.recommendSites.push(item)
+                } else {
+                    item.img_url = getImgUrl(item.img_url, 'biggerImg')
+                    this.ads.push(item)
+                }
             })
         })
     }
