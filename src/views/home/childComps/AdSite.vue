@@ -12,7 +12,9 @@ export default {
     props: {
       ads: {
         type: Array,
-        default: []
+        default: function() {
+          return [];
+        }
       }
     }
   }

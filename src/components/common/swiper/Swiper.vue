@@ -21,7 +21,9 @@ export default {
     props: {
         banners: {
             type: Array,
-            default: []
+            default: function() {
+                return []
+            }
         },
         interval: {
             type: Number,

@@ -34,3 +34,14 @@ export function getImgUrl(imgName, style="", width=''){
     
     return Const.imgUrl + '/' + imgName + imgStyle
   }
+
+export function formatGoodsInfo(lists) {
+  return lists.map(listItem => {
+    let item = listItem.item;
+    let pictures = JSON.parse(item.picture);
+    item.img_url = getImgUrl(pictures[item.first_picture])
+
+    return item;
+  })
+
+}

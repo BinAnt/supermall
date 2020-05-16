@@ -4,65 +4,102 @@
     <Swiper :banners="banners" :showIndicator="showIndicator"></Swiper>
     <recommendSite :recommendSites="recommendSites"></recommendSite>
     <AdSite :ads="ads"></AdSite>
+    <TabContol class="home-tab-control" :titles="['推荐','新上', '精选']"></TabContol>
+    <ul>
+        <li v-for="index in 100" :key="index">{{index}}</li>
+    </ul>
 </div>
 </template>
 
 <script>
 import NavBar from 'components/common/navbar/NavBar'
 import Swiper from 'components/common/swiper/Swiper'
+import TabContol from 'components/content/TabControl/TabControl'
+
 import recommendSite from './childComps/RecommendSite'
 import AdSite from './childComps/AdSite'
 
-import { getBanner,getRecommendSite } from 'network/home'
-import { getImgUrl } from 'common/utils'
+import {
+    getBanner,
+    getRecommendSite,
+    getRecommendGoods
+    } from 'network/home'
+import { getImgUrl,formatGoodsInfo} from 'common/utils'
 
 export default {
     name: 'Home',
     data() {
         return {
             banners: [], // banner数据
+            showIndicator: true, // 是否显示swiper 小点
             recommendSites: [], // 推荐位数据
             ads: [], // 广告位
-            showIndicator: true // 是否显示swiper 小点
+            goods: {
+                'pop': {'id': 5,'page': 0, 'list': []},
+                'new': {'id': 21,'page': 0, 'list': []},
+                'sell': {'id':7, 'page': 0, 'list': []}
+            }
         }
     },
     components: {
         NavBar,
         Swiper,
+        TabContol,
         recommendSite,
         AdSite
     },
     created() {
         //1、发送请求
-        getBanner().then(res => {
-            //数据处理
-            let data = res.data.data;
-           this.banners = data.map(item => {
-                item.img_url = getImgUrl(item.img_url, 'biggerImg')
-                return item;
-            })
-        })
+        //请求banner数据
+        this.getBanner()
 
         //2、请求推荐位/广告位
-        getRecommendSite().then(res => {
-            let list = res.data.list;
+        this.getRecommendSite()
 
-            res.data.list.map(item => {
-                if (item.category_id == 0) {
-                    item.img_url = getImgUrl(item.img_url, 'midImg')
-                    this.recommendSites.length<5&&this.recommendSites.push(item)
-                } else {
-                    item.img_url = getImgUrl(item.img_url, 'biggerImg')
-                    this.ads.push(item)
-                }
-            })
+        //3、请求推荐数据
+        this.getRecommendGoods('pop')
+        this.getRecommendGoods('new')
+        this.getRecommendGoods('sell')
+    },
+    methods: {
+        getBanner() {
+            getBanner().then(res => {
+                //数据处理
+                let data = res.data.data;
+                this.banners = data.map(item => {
+                        item.img_url = getImgUrl(item.img_url, 'biggerImg')
+                        return item;
+                    })
+                })
+        },
+        getRecommendSite() {
+            getRecommendSite().then(res => {
+                let list = res.data.list;
+
+                res.data.list.map(item => {
+                    if (item.category_id == 0) {
+                        item.img_url = getImgUrl(item.img_url, 'midImg')
+                        this.recommendSites.length<5&&this.recommendSites.push(item)
+                    } else {
+                        item.img_url = getImgUrl(item.img_url, 'biggerImg')
+                        this.ads.push(item)
+                    }
+                })
         })
+        },
+        getRecommendGoods(type) {
+            let page = this.goods[type].page + 1;
+            let id = this.goods[type].id;
+            getRecommendGoods(id, page).then(res => {
+                this.goods[type].list.push(...formatGoodsInfo(res.data.data))
+                this.goods[type].page = page;
+            })
+        }
     }
 }
 </script>
 <style scoped>
 #home {
-    height: 100vh;
     position: relative;
     padding-top: 44px;
 }
@@ -74,5 +111,9 @@ export default {
     left: 0;
     right: 0;
     z-index: 9;
+}
+.home-tab-control {
+    position: sticky;
+    top: 44px;
 }
 </style>

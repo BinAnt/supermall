@@ -15,7 +15,9 @@ export default {
     props: {
         recommendSites: {
             type: Array,
-            default: []
+            default: function() {
+                return [];
+            }
         }
     }
   }

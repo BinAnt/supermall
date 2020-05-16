@@ -11,3 +11,13 @@ export function getRecommendSite() {
         url: '/out-site/recommend-site'
     })
 }
+
+export function getRecommendGoods(type, page) {
+    return request({
+        url: '/out-site/home-recommend',
+        params: {
+            type,
+            page
+        }
+    })
+}
