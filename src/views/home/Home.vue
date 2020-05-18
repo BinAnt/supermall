@@ -1,7 +1,13 @@
 <template>
 <div id="home" >
     <NavBar class="home-nav-bar"><div class="nav-left" slot="center">购物街</div></NavBar>
-    <Scroller class="home-scroller" ref="scroll" :currentProbeType="3" @showBackTop="showBackTop">
+    <Scroller 
+    class="home-scroller" 
+    ref="scroll" 
+    :currentProbeType="3"
+    :pullUpLoad="true"
+    @pullingUp="pullingUp"
+    @showBackTop="showBackTop">
         <Swiper :banners="banners" :showIndicator="showIndicator"></Swiper>
         <recommendSite :recommendSites="recommendSites"></recommendSite>
         <AdSite :ads="ads"></AdSite>
@@ -73,7 +79,7 @@ export default {
     },
     methods: {
         /**
-         * 组件事件
+         * 事件监听组件事件
          */
         clickTab(index) {
             switch(index) {
@@ -87,6 +93,9 @@ export default {
                     this.currentType = 'sell'
                     break
             }
+        },
+        pullingUp() {
+            this.getRecommendGoods(this.currentType)
         },
         /**
          * 数据请求

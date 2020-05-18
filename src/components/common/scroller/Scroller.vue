@@ -15,6 +15,10 @@ export default {
         currentProbeType: {
             type: Number,
             default: 0
+        },
+        pullUpLoad: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -30,11 +34,18 @@ export default {
     mounted() {
         this.scroller = new BScroll(this.$refs.wrapper, {
             click: true,
-            probeType: this.currentProbeType
+            probeType: this.currentProbeType,
+            pullUpLoad: this.pullUpLoad
         })
 
+        //监听滚动的位置
         this.scroller.on('scroll', position => {
             this.$emit('showBackTop', position.y)
+        })
+        //监听下拉到底部
+        this.scroller.on('pullingUp', () => {
+            this.$emit('pullingUp')
+            this.scroller.finishPullUp();
         })
     },
     methods: {
