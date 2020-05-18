@@ -1,13 +1,15 @@
 <template>
-<div id="home">
+<div id="home" >
     <NavBar class="home-nav-bar"><div class="nav-left" slot="center">购物街</div></NavBar>
-    <Swiper :banners="banners" :showIndicator="showIndicator"></Swiper>
-    <recommendSite :recommendSites="recommendSites"></recommendSite>
-    <AdSite :ads="ads"></AdSite>
-    <TabContol class="home-tab-control" :titles="['推荐','新上', '精选']"></TabContol>
-    <ul>
-        <li v-for="index in 100" :key="index">{{index}}</li>
-    </ul>
+    <Scroller class="home-scroller" ref="scroll" :currentProbeType="3" @showBackTop="showBackTop">
+        <Swiper :banners="banners" :showIndicator="showIndicator"></Swiper>
+        <recommendSite :recommendSites="recommendSites"></recommendSite>
+        <AdSite :ads="ads"></AdSite>
+        <TabContol class="home-tab-control" :titles="['推荐','新上', '精选']" @clickTab="clickTab"></TabContol>
+        <GoodsList :goodsList="goods[currentType].list"/>
+    </Scroller>
+    <BackTop @click.native="backTop" v-show="isShowBackTop"></BackTop>
+    
 </div>
 </template>
 
@@ -15,6 +17,9 @@
 import NavBar from 'components/common/navbar/NavBar'
 import Swiper from 'components/common/swiper/Swiper'
 import TabContol from 'components/content/TabControl/TabControl'
+import GoodsList from 'components/content/good/GoodsList'
+import Scroller from 'components/common/scroller/Scroller'
+import BackTop from 'components/content/backTop/BackTop'
 
 import recommendSite from './childComps/RecommendSite'
 import AdSite from './childComps/AdSite'
@@ -38,13 +43,18 @@ export default {
                 'pop': {'id': 5,'page': 0, 'list': []},
                 'new': {'id': 21,'page': 0, 'list': []},
                 'sell': {'id':7, 'page': 0, 'list': []}
-            }
+            },
+            currentType: 'pop',
+            isShowBackTop: false
         }
     },
     components: {
         NavBar,
         Swiper,
         TabContol,
+        GoodsList,
+        Scroller,
+        BackTop,
         recommendSite,
         AdSite
     },
@@ -62,6 +72,25 @@ export default {
         this.getRecommendGoods('sell')
     },
     methods: {
+        /**
+         * 组件事件
+         */
+        clickTab(index) {
+            switch(index) {
+                case 0:
+                    this.currentType = 'pop'
+                    break
+                case 1:
+                    this.currentType = 'new'
+                    break
+                case 2:
+                    this.currentType = 'sell'
+                    break
+            }
+        },
+        /**
+         * 数据请求
+         */
         getBanner() {
             getBanner().then(res => {
                 //数据处理
@@ -94,6 +123,13 @@ export default {
                 this.goods[type].list.push(...formatGoodsInfo(res.data.data))
                 this.goods[type].page = page;
             })
+        },
+        backTop() {
+            //点击了返回顶部 这里出发滚动返回顶部
+            this.$refs.scroll.scrollTo(0, 0, 500)
+        },
+        showBackTop(postionY) {
+            this.isShowBackTop = -(postionY) > 500
         }
     }
 }
@@ -102,6 +138,7 @@ export default {
 #home {
     position: relative;
     padding-top: 44px;
+    height: 100vh;
 }
 .home-nav-bar {
     background-color: var(--color-tint);
@@ -115,5 +152,15 @@ export default {
 .home-tab-control {
     position: sticky;
     top: 44px;
+    z-index: 9;
+}
+.home-scroller {
+    /* height: 300px; */
+    overflow: hidden;
+    position: absolute;
+    top: 44px;
+    bottom: 49px;
+    left: 0;
+    right: 0;
 }
 </style>

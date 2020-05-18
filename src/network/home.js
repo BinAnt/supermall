@@ -1,4 +1,5 @@
-import {request} from './request'
+import {request, requestPost} from './request'
+const qs = require('qs');
 
 export function getBanner() {
     return request({
@@ -13,9 +14,10 @@ export function getRecommendSite() {
 }
 
 export function getRecommendGoods(type, page) {
-    return request({
+    return requestPost({
         url: '/out-site/home-recommend',
-        params: {
+        method: 'post',
+        data: {
             type,
             page
         }
