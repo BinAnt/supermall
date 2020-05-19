@@ -69,15 +69,58 @@ export default {
         //请求banner数据
         this.getBanner()
 
-        //2、请求推荐位/广告位
+        //2、请求推荐位/广告位 推荐数据
         this.getRecommendSite()
-
-        //3、请求推荐数据
         this.getRecommendGoods('pop')
         this.getRecommendGoods('new')
         this.getRecommendGoods('sell')
+
+        
+    },
+    mounted() {
+        // 3、监听item中图片加载完成
+        //  const refresh = this.debounce(this.$refs.scroll.refresh, 50);
+         const refresh = this.throttle(this.$refs.scroll.refresh, 10)
+        this.$bus.$on('itemImageLoad', () => {
+           refresh('aaa', 'bbbb')
+        
+            // this.$refs.scroll && this.$refs.scroll.refresh();
+        })
     },
     methods: {
+        /**
+         * 防抖函数
+         * fn 事件触发的操作
+         * delay 多少毫秒内连续触发事件，不会执行
+         */
+        debounce(fn, delay) {
+            let timer = null;
+            
+            return function(...args) {
+                let self = this;
+                timer && clearTimeout(timer);
+                timer = setTimeout(() => {
+                    fn.apply(self, args)
+                }, delay)
+            }
+        },
+        /**
+         * 节流函数
+         * fn 事件触发的操作
+         * mustDelay 间隔多少毫秒需要触发一次事件
+         */
+        throttle(fn, mustDelay) {
+            let timer,
+                start = 0;
+            return function(...args) {
+                let now = new Date().getTime(),
+                    self = this;
+                if(now > start + mustDelay) {
+                    fn.apply(self, args)
+                    start = now;
+                }
+            }
+        },
         /**
          * 事件监听组件事件
          */
@@ -95,7 +138,11 @@ export default {
             }
         },
         pullingUp() {
+            console.log('------');
+            
             this.getRecommendGoods(this.currentType)
+
+            this.$refs.scroll.finishPullUp()
         },
         /**
          * 数据请求

@@ -46,12 +46,25 @@ export default {
         this.scroller.on('pullingUp', () => {
             this.$emit('pullingUp')
             this.scroller.finishPullUp();
+            this.scroller.refresh()
         })
     },
     methods: {
         //滚动到某个位置
         scrollTo(x, y, duration) {
-            this.scroller.scrollTo(x, y, duration)
+            this.scroller && this.scroller.scrollTo(x, y, duration)
+        },
+        //刷新 重新获取高度
+        refresh(...args) {
+            console.log('----', args);
+            
+            this.scroller && this.scroller.refresh();
+        },
+        //上拉结束
+        finishPullUp() {
+            console.log('222222');
+            
+            this.scroller && this.scroller.finishPullUp();
         }
     }
 }

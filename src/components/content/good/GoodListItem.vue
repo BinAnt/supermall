@@ -1,6 +1,6 @@
 <template>
   <div class="goods-item">
-        <img :src="goodItem.img_url" alt="">
+        <img :src="goodItem.img_url" @load="itemImageLoad">
         <div class="goods-info">
             <p>{{goodItem.name}}</p>
             <span class="price">{{goodItem.price_normal}}</span>
@@ -18,6 +18,18 @@ export default {
             default() {
                 return {}
             }
+        }
+    },
+    methods: {
+        /**
+         * BScroll 存在的问题，加载一页之后不能更新scroll的高度
+         * 解决方案：
+         * 监听图片加载完成，都去请求一下scroll.refresh()
+         * 
+         * 这里要用到一个知识点叫事件总线
+         */
+        itemImageLoad() {
+            this.$bus.$emit('itemImageLoad')
         }
     }
   }
