@@ -1,5 +1,5 @@
 <template>
-  <div class="goods-item">
+  <div class="goods-item" @click="clickItem">
         <img :src="goodItem.img_url" @load="itemImageLoad">
         <div class="goods-info">
             <p>{{goodItem.name}}</p>
@@ -30,6 +30,10 @@ export default {
          */
         itemImageLoad() {
             this.$bus.$emit('itemImageLoad')
+        },
+        //点击跳转到详情
+        clickItem() {
+            this.$router.push('/detail/'+ this.goodItem.id)
         }
     }
   }
