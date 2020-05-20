@@ -58,14 +58,15 @@ export default {
             recommendSites: [], // 推荐位数据
             ads: [], // 广告位
             goods: {
-                'pop': {'id': 5,'page': 0, 'list': []},
-                'new': {'id': 21,'page': 0, 'list': []},
+                'pop': {'id': 4,'page': 0, 'list': []},
+                'new': {'id': 22,'page': 0, 'list': []},
                 'sell': {'id':7, 'page': 0, 'list': []}
             },
             currentType: 'pop',
             isShowBackTop: false,
             tabOffsetTop: 0, // tabControl 距离顶部的距离
-            isTabFixed: false //是否吸顶tabControl
+            isTabFixed: false, //是否吸顶tabControl
+            positionY: 0
         }
     },
     components: {
@@ -97,6 +98,20 @@ export default {
            refresh()
             // this.$refs.scroll && this.$refs.scroll.refresh();
         })
+    },
+    destroyed() {
+        console.log('12313');
+        
+    },
+    //被keep-alive缓存的组件激活时调用
+    activated() {
+        this.$refs.scroll.refresh();
+        this.$refs.scroll.scroller.scrollTo(0, this.positionY, 0)
+    },
+    //被keep-alive缓存的组件停用时调用
+    deactivated() {
+        // console.log(this.$refs.scroll.scroller.y);
+        this.positionY = this.$refs.scroll.getScrollY();
     },
     methods: {
         /**
@@ -164,7 +179,7 @@ export default {
         getRecommendGoods(type) {
             let page = this.goods[type].page + 1;
             let id = this.goods[type].id;
-            getRecommendGoods(id, page).then(res => {-
+            getRecommendGoods(id, page).then(res => {
                 this.goods[type].list.push(...formatGoodsInfo(res.data.data))
                 this.goods[type].page = page;
 
@@ -205,8 +220,9 @@ export default {
 }
 .fixed {
     position: relative;
-    top: 44px;
+    top: 0;
     left: 0;
     right: 0;
+    z-index: 99;
 }
 </style>

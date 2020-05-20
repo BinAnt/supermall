@@ -67,6 +67,9 @@ export default {
         //上拉结束
         finishPullUp() {
             this.scroller && this.scroller.finishPullUp();
+        },
+        getScrollY() {
+            return this.scroller ? this.scroller.y : 0;
         }
     }
 }
