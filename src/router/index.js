@@ -36,6 +36,7 @@ Vue.use(VueRouter)
   },
   {
     path: '/detail/:id',
+    name: 'Detail',
     component: Detail
   }
 ]

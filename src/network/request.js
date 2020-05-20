@@ -39,6 +39,7 @@ export function requestPost(config) {
     const instance = axios.create({
         baseURL: 'http://api.qualife.com',
         timeout: 5000,
+        method: 'post',
         headers: { 'content-type': 'application/x-www-form-urlencoded' }
     })
     //2、拦截器

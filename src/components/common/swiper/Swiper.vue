@@ -229,6 +229,7 @@ export default {
     border-radius: 2px;
 }
 .dots .active {
-    background-color: #ffffff;
+    background-color: var(  --color-tint: #ff8198;
+olor-background)
 }
 </style>
