@@ -39,15 +39,21 @@ export default {
         })
 
         //监听滚动的位置
-        this.scroller.on('scroll', position => {
-            this.$emit('showBackTop', position.y)
-        })
+        if(this.currentProbeType === 2 || this.currentProbeType === 3) {
+            this.scroller.on('scroll', position => {
+                this.$emit('contentScroll', position.y)
+            })
+        }
+        
         //监听下拉到底部
-        this.scroller.on('pullingUp', () => {
-            this.$emit('pullingUp')
-            this.scroller.finishPullUp();
-            this.scroller.refresh()
-        })
+        if(this.pullUpLoad) {
+            this.scroller.on('pullingUp', () => {
+                this.$emit('pullingUp')
+                this.scroller.finishPullUp();
+                this.scroller.refresh()
+            })
+        }
+        
     },
     methods: {
         //滚动到某个位置
@@ -56,14 +62,10 @@ export default {
         },
         //刷新 重新获取高度
         refresh(...args) {
-            console.log('----', args);
-            
             this.scroller && this.scroller.refresh();
         },
         //上拉结束
         finishPullUp() {
-            console.log('222222');
-            
             this.scroller && this.scroller.finishPullUp();
         }
     }

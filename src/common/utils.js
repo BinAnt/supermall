@@ -43,5 +43,39 @@ export function formatGoodsInfo(lists) {
 
     return item;
   })
+}
 
+/**
+* 防抖函数
+* fn 事件触发的操作
+* delay 多少毫秒内连续触发事件，不会执行
+*/
+export function debounce(fn, delay) {
+   let timer = null;
+   
+   return function(...args) {
+       let self = this;
+       timer && clearTimeout(timer);
+       timer = setTimeout(() => {
+           fn.apply(self, args)
+       }, delay)
+   }
+}
+
+  /**
+   * 节流函数
+   * fn 事件触发的操作
+   * mustDelay 间隔多少毫秒需要触发一次事件
+   */
+  export function throttle(fn, mustDelay) {
+    let timer,
+        start = 0;
+    return function(...args) {
+        let now = new Date().getTime(),
+            self = this;
+        if(now > start + mustDelay) {
+            fn.apply(self, args)
+            start = now;
+        }
+    }
 }

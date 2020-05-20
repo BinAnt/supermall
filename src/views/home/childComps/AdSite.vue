@@ -1,7 +1,7 @@
 <template>
   <div class="ad-site">
     <a :href="ad.link" v-for="ad in ads" :key="ad.img_url">
-      <img :src="ad.img_url" alt="">
+      <img :src="ad.img_url" alt="" @load="adImageLoad">
     </a>
   </div>
 </template>
@@ -9,11 +9,24 @@
 <script>
 export default {
     name: 'AdSite',
+    data() {
+      return {
+        isLoad: false
+      }
+    },
     props: {
       ads: {
         type: Array,
         default: function() {
           return [];
+        }
+      }
+    },
+    methods: {
+      adImageLoad() {
+        if(!this.isLoad) {
+          this.$emit('homeImageLoad')
+          this.isLoad = true
         }
       }
     }

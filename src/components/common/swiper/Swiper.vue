@@ -3,7 +3,7 @@
       <!--轮播图片-->
       <div class="swiper" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
           <SwiperItem v-for="banner in banners" :key="banner.img_url">
-              <img slot="swiper-img" :src="banner.img_url" alt="" class="swiper-img">
+              <img slot="swiper-img" :src="banner.img_url" alt="" class="swiper-img" @load="loadImage">
           </SwiperItem>
       </div>
       <!--轮播点-->
@@ -48,7 +48,8 @@ export default {
             totalWidth: 0, //swiper的宽度
             swiperStyle: {}, //swiper样式
             currentIndex: 1, //当前的index
-            scrolling: false //是否正在滚动
+            scrolling: false, //是否正在滚动
+            isLoad: false
         }
     },
     mounted() {
@@ -64,6 +65,12 @@ export default {
         SwiperItem
     },
     methods: {
+    loadImage: function() {
+        if(!this.isLoad) {
+            this.$emit('homeImageLoad')
+            this.isLoad = true
+        }
+    },
      /**
        * 定时器操作
        */

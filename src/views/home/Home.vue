@@ -1,17 +1,29 @@
 <template>
 <div id="home" >
     <NavBar class="home-nav-bar"><div class="nav-left" slot="center">购物街</div></NavBar>
+    <TabContol 
+        :titles="['推荐','新上', '精选']" 
+        @clickTab="clickTab" 
+        ref="tabControl1"
+        class="no-display"
+        :class="{fixed:isTabFixed}"
+        v-show="isTabFixed"
+        ></TabContol>
     <Scroller 
     class="home-scroller" 
     ref="scroll" 
     :currentProbeType="3"
     :pullUpLoad="true"
     @pullingUp="pullingUp"
-    @showBackTop="showBackTop">
-        <Swiper :banners="banners" :showIndicator="showIndicator"></Swiper>
+    @contentScroll="contentScroll">
+        <Swiper :banners="banners" :showIndicator="showIndicator" @homeImageLoad="homeImageLoad"></Swiper>
         <recommendSite :recommendSites="recommendSites"></recommendSite>
-        <AdSite :ads="ads"></AdSite>
-        <TabContol class="home-tab-control" :titles="['推荐','新上', '精选']" @clickTab="clickTab"></TabContol>
+        <AdSite :ads="ads" @homeImageLoad="homeImageLoad"></AdSite>
+        <TabContol 
+        :titles="['推荐','新上', '精选']" 
+        @clickTab="clickTab" 
+        ref="tabControl2"
+        ></TabContol>
         <GoodsList :goodsList="goods[currentType].list"/>
     </Scroller>
     <BackTop @click.native="backTop" v-show="isShowBackTop"></BackTop>
@@ -35,7 +47,7 @@ import {
     getRecommendSite,
     getRecommendGoods
     } from 'network/home'
-import { getImgUrl,formatGoodsInfo} from 'common/utils'
+import { getImgUrl,formatGoodsInfo, debounce, throttle} from 'common/utils'
 
 export default {
     name: 'Home',
@@ -51,7 +63,9 @@ export default {
                 'sell': {'id':7, 'page': 0, 'list': []}
             },
             currentType: 'pop',
-            isShowBackTop: false
+            isShowBackTop: false,
+            tabOffsetTop: 0, // tabControl 距离顶部的距离
+            isTabFixed: false //是否吸顶tabControl
         }
     },
     components: {
@@ -74,53 +88,17 @@ export default {
         this.getRecommendGoods('pop')
         this.getRecommendGoods('new')
         this.getRecommendGoods('sell')
-
-        
     },
     mounted() {
         // 3、监听item中图片加载完成
         //  const refresh = this.debounce(this.$refs.scroll.refresh, 50);
-         const refresh = this.throttle(this.$refs.scroll.refresh, 10)
+        const refresh = debounce(this.$refs.scroll.refresh, 10)
         this.$bus.$on('itemImageLoad', () => {
-           refresh('aaa', 'bbbb')
-        
+           refresh()
             // this.$refs.scroll && this.$refs.scroll.refresh();
         })
     },
     methods: {
-        /**
-         * 防抖函数
-         * fn 事件触发的操作
-         * delay 多少毫秒内连续触发事件，不会执行
-         */
-        debounce(fn, delay) {
-            let timer = null;
-            
-            return function(...args) {
-                let self = this;
-                timer && clearTimeout(timer);
-                timer = setTimeout(() => {
-                    fn.apply(self, args)
-                }, delay)
-            }
-        },
-        /**
-         * 节流函数
-         * fn 事件触发的操作
-         * mustDelay 间隔多少毫秒需要触发一次事件
-         */
-        throttle(fn, mustDelay) {
-            let timer,
-                start = 0;
-            return function(...args) {
-                let now = new Date().getTime(),
-                    self = this;
-                if(now > start + mustDelay) {
-                    fn.apply(self, args)
-                    start = now;
-                }
-            }
-        },
         /**
          * 事件监听组件事件
          */
@@ -136,13 +114,24 @@ export default {
                     this.currentType = 'sell'
                     break
             }
+
+            this.$refs.tabControl1.currentIndex = index
+            this.$refs.tabControl2.currentIndex = index
         },
         pullingUp() {
-            console.log('------');
-            
             this.getRecommendGoods(this.currentType)
+        },
+        //监听滚动位置
+        contentScroll(postionY) {
+            //是否显示返回顶部按钮
+            this.isShowBackTop = -(postionY) > 500
 
-            this.$refs.scroll.finishPullUp()
+            //是否吸顶tabcontrol
+            this.isTabFixed = -(postionY) > this.tabOffsetTop ? true : false
+        },
+        //监听图片加载完 事件
+        homeImageLoad() {
+            this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop
         },
         /**
          * 数据请求
@@ -175,17 +164,17 @@ export default {
         getRecommendGoods(type) {
             let page = this.goods[type].page + 1;
             let id = this.goods[type].id;
-            getRecommendGoods(id, page).then(res => {
+            getRecommendGoods(id, page).then(res => {-
                 this.goods[type].list.push(...formatGoodsInfo(res.data.data))
                 this.goods[type].page = page;
+
+                //加载完成之后
+                this.$refs.scroll.finishPullUp()
             })
         },
         backTop() {
             //点击了返回顶部 这里出发滚动返回顶部
             this.$refs.scroll.scrollTo(0, 0, 500)
-        },
-        showBackTop(postionY) {
-            this.isShowBackTop = -(postionY) > 500
         }
     }
 }
@@ -205,17 +194,18 @@ export default {
     right: 0;
     z-index: 9;
 }
-.home-tab-control {
-    position: sticky;
-    top: 44px;
-    z-index: 9;
-}
 .home-scroller {
     /* height: 300px; */
     overflow: hidden;
     position: absolute;
     top: 44px;
     bottom: 49px;
+    left: 0;
+    right: 0;
+}
+.fixed {
+    position: relative;
+    top: 44px;
     left: 0;
     right: 0;
 }
