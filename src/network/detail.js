@@ -10,6 +10,17 @@ export function getGoodInfo(id) {
     })
 }
 
+export function recommendGoodsList(type, page, limit) {
+    return requestPost({
+        url: '/out-site/home-recommend',
+        method: 'post',
+        data: {
+            type,
+            page,
+            limit
+        }
+    })
+}
 export class goods {
     constructor(goodInfo) {
         this.price_year = goodInfo.keep[0].price_year
@@ -21,8 +32,6 @@ export class goods {
 
 export class detailIntroduce {
     constructor(goodInfo) {
-        console.log(goodInfo);
-        
         this.pictures = JSON.parse(goodInfo.detail).map(item => {
             return getImgUrl(item, 'biggerImg')
         })
@@ -34,3 +43,4 @@ export class detailIntroduce {
         this.property_name = goodInfo.extra[goodInfo.keep[0].id].property_name
     }
 }
+

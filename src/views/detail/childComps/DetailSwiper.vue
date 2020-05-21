@@ -1,5 +1,5 @@
 <template>
-    <Swiper :banners="topImages" class="detail-swiper"></Swiper>
+    <Swiper :banners="topImages" class="detail-swiper" @homeImageLoad="detailImageLoad"></Swiper>
 </template>
 
 <script>
@@ -16,6 +16,11 @@ export default {
             default() {
                 return []
             }
+        }
+    },
+    methods: {
+        detailImageLoad() {
+            this.$emit('detailImageLoad')
         }
     }
 }

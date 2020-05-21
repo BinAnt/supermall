@@ -30,6 +30,8 @@ export default {
          */
         itemImageLoad() {
             this.$bus.$emit('itemImageLoad')
+
+            this.$emit('itemImageLoad')
         },
         //点击跳转到详情
         clickItem() {

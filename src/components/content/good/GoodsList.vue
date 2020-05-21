@@ -1,6 +1,6 @@
 <template>
   <div class="goods-list">
-      <GoodListItem v-for="(goodItem, index) in goodsList" :key="index" :goodItem="goodItem" />
+      <GoodListItem v-for="(goodItem, index) in goodsList" :key="index" :goodItem="goodItem" @itemImageLoad="itemImageLoad"/>
   </div>
 </template>
 
@@ -19,6 +19,11 @@ export default {
     },
     components: {
         GoodListItem
+    },
+    methods: {
+        itemImageLoad() {
+            this.$emit('itemImageLoad')
+        }
     }
   }
 </script>

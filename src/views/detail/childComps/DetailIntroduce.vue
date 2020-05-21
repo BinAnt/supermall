@@ -2,7 +2,7 @@
   <div class="detail-introduce">
       <TabControl :titles="['商品介绍', '规格参数']" @clickTab="clickTab"></TabControl>
       <div class="goods-detail-info" v-if="isShow">
-          <img v-for="url in detailIntroduce.pictures" :src="url" :key="url" alt="">
+          <img v-for="url in detailIntroduce.pictures" :src="url" :key="url" alt="" @load="detailImageLoad">
       </div>
       <div class="goods-detail-attr" v-else>
           <div class="tr">
@@ -53,6 +53,9 @@ export default {
     methods: {
         clickTab(index) {
             this.isShow = index === 0
+        },
+        detailImageLoad() {
+            this.$emit('detailImageLoad')
         }
     }
   }
