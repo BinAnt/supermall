@@ -1,7 +1,11 @@
 <template>
   <div id="detail">
-      <DetailNavBar class="detail-navbar" @clickTitleItem="clickTitleItem"></DetailNavBar>
-      <Scroller class="detail-scroller" ref="scroll">
+      <DetailNavBar class="detail-navbar" @clickTitleItem="clickTitleItem" ref="nav"></DetailNavBar>
+      <Scroller 
+        class="detail-scroller" 
+        ref="scroll" 
+        @contentScroll="contentScroll" 
+        :currentProbeType="3">
         <DetailSwiper :topImages="topImages" @detailImageLoad="detailImageLoad"></DetailSwiper>
         <DetailGoodInfo :goods="goodInfo" ref="params" ></DetailGoodInfo>
         <DetailIntroduce :detailIntroduce="detailIntroduce" ref="comment" @detailImageLoad="detailImageLoad"/>
@@ -42,7 +46,8 @@ export default {
             goodInfo: {},
             detailIntroduce: {},
             goodsList: [],
-            topOffset: []
+            topOffset: [],
+            currentIndex: 0
         }
     },
     created() {
@@ -96,9 +101,8 @@ export default {
                 this.topOffset.push(this.$refs.params.$el.offsetTop)
                 this.topOffset.push(this.$refs.comment.$el.offsetTop)
                 this.topOffset.push(this.$refs.recommend.$el.offsetTop)
-
-                console.log(this.topOffset);
-            })
+                
+            }, 200)
     },
     // 一旦有新数据渲染就会执行
     updated() {
@@ -129,6 +133,33 @@ export default {
             this.$refs.scroll.scroller.refresh();
             //获取标题位置
             this.getThemeTopY()
+        },
+        //滚动获取当前位置
+        contentScroll(position) {
+            let positionY = -(position - 44);
+            this.topOffset.push(Number.MAX_VALUE) //人为添加一个大数据在后面
+            // console.log(position);
+            // topOffset [0, 244, 330, 6584]
+            // console.log(this.topOffset, positionY);
+            
+            //方法一
+            // for(var i = this.topOffset.length - 1; i >= 0; i--) {
+            //     if(positionY >= this.topOffset[i]) {
+            //         if(this.currentIndex != i) {
+            //             this.currentIndex = i
+            //             this.$refs.nav.currentIndex = this.currentIndex
+            //         }
+            //         break;
+            //     }
+            // }
+
+            //方法二 这种方法优于上面的方法
+            for(let i = 0; i< this.topOffset.length; i++) {
+                if(this.currentIndex !== i && (positionY >= this.topOffset[i] && positionY < this.topOffset[i+1])) {
+                    this.currentIndex = i
+                    this.$refs.nav.currentIndex = this.currentIndex
+                }
+            }
         }
     }
   }
