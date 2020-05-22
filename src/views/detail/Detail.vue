@@ -11,7 +11,7 @@
         <DetailIntroduce :detailIntroduce="detailIntroduce" ref="comment" @detailImageLoad="detailImageLoad"/>
         <GoodsList :goodsList="goodsList" ref="recommend" @itemImageLoad="detailImageLoad"></GoodsList>
       </Scroller>
-      <DetailBottomBar></DetailBottomBar>
+      <DetailBottomBar @addJoinCart="addJoinCart"></DetailBottomBar>
       <BackTop @click.native="backTop" v-show="isShowBackTop"></BackTop>
   </div>
 </template>
@@ -30,7 +30,6 @@ import { getGoodInfo, goods, detailIntroduce, recommendGoodsList } from 'network
 import { getImgUrl, formatGoodsInfo, debounce } from 'common/utils'
 import DetailConst from 'common/const'
 import {mixin, backTopMixin} from 'common/mixin'
-
 
 export default {
     name: 'Detail',
@@ -168,6 +167,16 @@ export default {
 
             //是否显示返回顶部按钮
             this.isShowBackTopFunc(position)
+        },
+        //加入购物车
+        addJoinCart() {
+            //1、封装商品信息
+            let product = {};
+            product = Object.assign(product, this.goodInfo, this.detailIntroduce)
+            product.id = this.id;
+            product.face_url = this.topImages[0].img_url;
+            //2、把数据传递给vuex
+            this.$store.commit('addJoinCart', product)
         }
     }
   }

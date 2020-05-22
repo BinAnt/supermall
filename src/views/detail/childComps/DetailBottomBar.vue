@@ -6,14 +6,19 @@
         </div>
       <div class="bottom-bar-item"><img src="~assets/img/common/collect.svg" alt="">收藏</div>
       <div class="bottom-bar-item"><img src="~assets/img/common/cart.svg" alt="">购物车</div>
-      <div class="item-cart">加入购物车</div>
+      <div class="item-cart" @click="addCart">加入购物车</div>
       <div class="item-cart buy-now">立即购买</div>
   </div>
 </template>
 
 <script>
 export default {
-    name: 'DetailBottomBar'
+    name: 'DetailBottomBar',
+    methods: {
+        addCart() {
+            this.$emit('addJoinCart')
+        }
+    }
   }
 </script>
 
