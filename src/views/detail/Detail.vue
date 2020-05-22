@@ -11,6 +11,8 @@
         <DetailIntroduce :detailIntroduce="detailIntroduce" ref="comment" @detailImageLoad="detailImageLoad"/>
         <GoodsList :goodsList="goodsList" ref="recommend" @itemImageLoad="detailImageLoad"></GoodsList>
       </Scroller>
+      <DetailBottomBar></DetailBottomBar>
+      <BackTop @click.native="backTop" v-show="isShowBackTop"></BackTop>
   </div>
 </template>
 
@@ -19,13 +21,15 @@ import DetailNavBar from './childComps/DetailNavBar'
 import DetailSwiper from './childComps/DetailSwiper'
 import DetailGoodInfo from './childComps/DetailGoodInfo'
 import DetailIntroduce from './childComps/DetailIntroduce'
+import DetailBottomBar from './childComps/DetailBottomBar'
 
 import Scroller from 'components/common/scroller/Scroller'
 import GoodsList from 'components/content/good/GoodsList'
 
-import {getGoodInfo, goods, detailIntroduce, recommendGoodsList} from 'network/detail'
-import { getImgUrl,formatGoodsInfo,debounce } from 'common/utils'
-import {mixin} from 'common/mixin'
+import { getGoodInfo, goods, detailIntroduce, recommendGoodsList } from 'network/detail'
+import { getImgUrl, formatGoodsInfo, debounce } from 'common/utils'
+import DetailConst from 'common/const'
+import {mixin, backTopMixin} from 'common/mixin'
 
 
 export default {
@@ -35,10 +39,11 @@ export default {
         DetailSwiper,
         DetailGoodInfo,
         DetailIntroduce,
+        DetailBottomBar,
         Scroller,
         GoodsList
     },
-    mixins: [mixin],
+    mixins: [mixin, backTopMixin],
     data() {
         return {
             id: null,
@@ -160,6 +165,9 @@ export default {
                     this.$refs.nav.currentIndex = this.currentIndex
                 }
             }
+
+            //是否显示返回顶部按钮
+            this.isShowBackTopFunc(position)
         }
     }
   }
@@ -174,6 +182,6 @@ export default {
 }
 .detail-scroller {
     overflow: hidden;
-    height: calc(100% - 44px);
+    height: calc(100% - 44px - 49px);
 }
 </style>

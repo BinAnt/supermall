@@ -37,10 +37,11 @@ import Swiper from 'components/common/swiper/Swiper'
 import TabContol from 'components/content/TabControl/TabControl'
 import GoodsList from 'components/content/good/GoodsList'
 import Scroller from 'components/common/scroller/Scroller'
-import BackTop from 'components/content/backTop/BackTop'
 
 import recommendSite from './childComps/RecommendSite'
 import AdSite from './childComps/AdSite'
+
+import {backTopMixin} from 'common/mixin'
 
 import {
     getBanner,
@@ -63,19 +64,18 @@ export default {
                 'sell': {'id':7, 'page': 0, 'list': []}
             },
             currentType: 'pop',
-            isShowBackTop: false,
             tabOffsetTop: 0, // tabControl 距离顶部的距离
             isTabFixed: false, //是否吸顶tabControl
             positionY: 0
         }
     },
+    mixins: [backTopMixin],
     components: {
         NavBar,
         Swiper,
         TabContol,
         GoodsList,
         Scroller,
-        BackTop,
         recommendSite,
         AdSite
     },
@@ -139,7 +139,7 @@ export default {
         //监听滚动位置
         contentScroll(postionY) {
             //是否显示返回顶部按钮
-            this.isShowBackTop = -(postionY) > 500
+            this.isShowBackTopFunc(postionY)
 
             //是否吸顶tabcontrol
             this.isTabFixed = -(postionY) > this.tabOffsetTop ? true : false
@@ -186,10 +186,6 @@ export default {
                 //加载完成之后
                 this.$refs.scroll.finishPullUp()
             })
-        },
-        backTop() {
-            //点击了返回顶部 这里出发滚动返回顶部
-            this.$refs.scroll.scrollTo(0, 0, 500)
         }
     }
 }
