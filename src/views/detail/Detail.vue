@@ -176,7 +176,10 @@ export default {
             product.id = this.id;
             product.face_url = this.topImages[0].img_url;
             //2、把数据传递给vuex
-            this.$store.commit('addJoinCart', product)
+            //this.$store.commit('addJoinCart', product)
+
+            //换成actions
+            this.$store.dispatch('addJoinCart', product)
         }
     }
   }
