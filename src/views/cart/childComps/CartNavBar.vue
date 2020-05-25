@@ -1,7 +1,7 @@
 <template>
   <div class="cart-navbar">
       <NavBar>
-          <div slot="center">购物车({{cartLength}})</div>
+          <div slot="center">购物车 <span v-show="cartLength > 0">({{cartLength}})</span></div>
       </NavBar>
   </div>
 </template>

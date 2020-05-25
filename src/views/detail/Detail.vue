@@ -11,8 +11,9 @@
         <DetailIntroduce :detailIntroduce="detailIntroduce" ref="comment" @detailImageLoad="detailImageLoad"/>
         <GoodsList :goodsList="goodsList" ref="recommend" @itemImageLoad="detailImageLoad"></GoodsList>
       </Scroller>
-      <DetailBottomBar @addJoinCart="addJoinCart"></DetailBottomBar>
+      <DetailBottomBar @addJoinCart="joinCart"></DetailBottomBar>
       <BackTop @click.native="backTop" v-show="isShowBackTop"></BackTop>
+
   </div>
 </template>
 
@@ -30,6 +31,8 @@ import { getGoodInfo, goods, detailIntroduce, recommendGoodsList } from 'network
 import { getImgUrl, formatGoodsInfo, debounce } from 'common/utils'
 import DetailConst from 'common/const'
 import {mixin, backTopMixin} from 'common/mixin'
+
+import { mapActions } from 'vuex'
 
 export default {
     name: 'Detail',
@@ -130,6 +133,8 @@ export default {
         
     },
     methods: {
+        //把vuex中的actions方法注册到组件中来
+        ...mapActions(['addJoinCart']),
         clickTitleItem(index) {
             this.$refs.scroll.scrollTo(0, -(this.topOffset[index] - 44), 200)
         },
@@ -169,7 +174,7 @@ export default {
             this.isShowBackTopFunc(position)
         },
         //加入购物车
-        addJoinCart() {
+        joinCart() {
             //1、封装商品信息
             let product = {};
             product = Object.assign(product, this.goodInfo, this.detailIntroduce)
@@ -179,8 +184,21 @@ export default {
             //this.$store.commit('addJoinCart', product)
 
             //换成actions
-            this.$store.dispatch('addJoinCart', product)
+            // this.$store.dispatch('addJoinCart', product).then(res => {
+            //     console.log(res);
+            // })
+            //直接调用vuex中的actions
+            this.addJoinCart(product).then(res => {
+                //现在只需要这一行就可以调用toast了
+                this.$toast.show(res);
+            })
         }
+        // showToast() {
+        //     this.isShow = true;
+        //     setTimeout(() => {
+        //         this.isShow = false
+        //     },1500)
+        // }
     }
   }
 </script>

@@ -8,7 +8,7 @@
       <!--合计多少钱-->
       <div class="total-money">合计：￥{{totalMoney}}</div>
       <!--去计算-->
-      <div class="sure-order">去计算</div>
+      <div class="sure-order" @click="goCalc">去计算<span v-show="selectCount>0">({{selectCount}})</span></div>
   </div>
 </template>
 
@@ -24,14 +24,23 @@ export default {
     },
     computed: {
         ...mapGetters([
+            'cartListLength',
             'allChecked',
-            'totalMoney'
+            'totalMoney',
+            'selectCount'
             ])
     },
     methods: {
         //全选
         selectAll() {
             this.$store.commit('selectAll', this.allChecked)
+        },
+        goCalc() {
+            if(this.selectCount === 0) {
+                this.$toast.show('选择购买的商品')
+            }
+            console.log('去计算');
+            
         }
     }
   }

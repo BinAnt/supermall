@@ -6,5 +6,6 @@ export default {
         return state.cartList.filter(item => item.checked).reduce((total, item) => {
             return total + parseFloat(item.price_year) * item.count
         }, 0)
-    }
+    },
+    selectCount: state => state.cartList.filter(item => item.checked).length
 }
