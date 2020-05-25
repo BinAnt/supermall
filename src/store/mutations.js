@@ -1,6 +1,8 @@
 import {
     CART_ADD_COUNT,
-    JOIN_CART
+    JOIN_CART,
+    UPDATE_CHECKED,
+    SELECT_ALL
   } from './mutation-types'
 
 export default {
@@ -27,6 +29,16 @@ export default {
     },
     //购物车添加一条数据
     [JOIN_CART](state, payload) {
+      payload.checked = false
       state.cartList.push(payload)
+    },
+    [UPDATE_CHECKED](state, payload) {
+      state.cartList[payload].checked = !state.cartList[payload].checked
+    },
+    [SELECT_ALL](state, payload) {
+      state.cartList = state.cartList.map(item => {
+        item.checked = !payload ? true : false
+        return item;
+      })
     }
   }

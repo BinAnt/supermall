@@ -34,10 +34,10 @@ export default {
 
 <style scoped>
 .cart-goods-item {
-    width: 100%;
+    width: 90%;
     display: flex;
     flex-direction: column;
-    border-bottom: 1px solid #f0f0f0;
+    
     padding: 5px 0;
 }
 .good-item {
