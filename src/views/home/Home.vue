@@ -59,9 +59,9 @@ export default {
             recommendSites: [], // 推荐位数据
             ads: [], // 广告位
             goods: {
-                'pop': {'id': 4,'page': 0, 'list': []},
-                'new': {'id': 22,'page': 0, 'list': []},
-                'sell': {'id':7, 'page': 0, 'list': []}
+                'pop': {'id': 4,'page': 0, 'list': [], 'noMore': false},
+                'new': {'id': 22,'page': 0, 'list': [], 'noMore': false},
+                'sell': {'id':7, 'page': 0, 'list': [], 'noMore': false}
             },
             currentType: 'pop',
             tabOffsetTop: 0, // tabControl 距离顶部的距离
@@ -134,6 +134,8 @@ export default {
             this.$refs.tabControl2.currentIndex = index
         },
         pullingUp() {
+            console.log('-----');
+            
             this.getRecommendGoods(this.currentType)
         },
         //监听滚动位置
@@ -179,12 +181,17 @@ export default {
         getRecommendGoods(type) {
             let page = this.goods[type].page + 1;
             let id = this.goods[type].id;
+            if(this.goods[type].noMore) return;
             getRecommendGoods(id, page).then(res => {
+                if(res.data.total == 0) {
+                    this.goods[type].noMore = true
+                }
                 this.goods[type].list.push(...formatGoodsInfo(res.data.data))
                 this.goods[type].page = page;
 
                 //加载完成之后
                 this.$refs.scroll.finishPullUp()
+                this.$refs.scroll.refresh();
             })
         }
     }

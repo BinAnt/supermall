@@ -45,15 +45,16 @@ export default {
             })
         }
         
-        //监听下拉到底部
+        // 是否派发滚动到底部事件，用于上拉加载
         if(this.pullUpLoad) {
-            this.scroller.on('pullingUp', () => {
-                this.$emit('pullingUp')
-                this.scroller.finishPullUp();
-                this.scroller.refresh()
+            this.scroller.on('scrollEnd', () => {
+                if(this.scroller.y <= (this.scroller.maxScrollY + 50)) {
+                    this.$emit('pullingUp')
+                    this.scroller.finishPullUp();
+                    this.scroller.refresh()
+                }
             })
         }
-        
     },
     methods: {
         //滚动到某个位置
